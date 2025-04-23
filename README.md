@@ -50,12 +50,34 @@ end)
 -- AGUARDAR ACESSO
 repeat wait() until acessoLiberado
 
--- CARREGAR CAFEX HUB MOBILE APÓS A SENHA
+-- CAFEX HUB MOBILE - EXEMPLO FUNCIONAL
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- Cola aqui o script do "Cafex Hub Mobile" que eu te mandei antes
--- Começando da parte:
--- local Players = game:GetService("Players")
--- local LocalPlayer = Players.LocalPlayer
--- ...
+local gui2 = Instance.new("ScreenGui", game.CoreGui)
+gui2.Name = "CafexHubMobile"
 
--- Ou se quiser, posso colar tudo já junto num único script completo. Deseja isso?
+local main = Instance.new("Frame", gui2)
+main.Size = UDim2.new(0, 250, 0, 150)
+main.Position = UDim2.new(0.5, -125, 0.5, -75)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+
+local titulo = Instance.new("TextLabel", main)
+titulo.Size = UDim2.new(1, 0, 0.3, 0)
+titulo.Position = UDim2.new(0, 0, 0, 0)
+titulo.Text = "Cafex Hub - Capítulo 1"
+titulo.TextColor3 = Color3.new(1, 1, 1)
+titulo.BackgroundTransparency = 1
+titulo.TextScaled = true
+
+local botao = Instance.new("TextButton", main)
+botao.Size = UDim2.new(0.8, 0, 0.3, 0)
+botao.Position = UDim2.new(0.1, 0, 0.5, 0)
+botao.Text = "Clique aqui!"
+botao.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+botao.TextColor3 = Color3.new(1, 1, 1)
+botao.TextScaled = true
+
+botao.MouseButton1Click:Connect(function()
+	LocalPlayer:Kick("Você clicou no botão do Capítulo 1!")
+end)
