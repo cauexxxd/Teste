@@ -1,65 +1,59 @@
--- Fly Script Mobile - Cafex (Mad City / Delta Executor)
-local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = char:WaitForChild("HumanoidRootPart")
+local MainTab = Window:NewTab("Main")
+local MainSection = 
+MainTab:NewSection("MainSection")
 
-local flying = false
-local speed = 5
-local bodyGyro, bodyVelocity
+MainSection:NewButton("NAME ESP", "Q to toggle on and off", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/ESP-Script/main/ESP.lua"))()
+end)
 
--- Função de ativar fly
-function startFly()
-    bodyGyro = Instance.new("BodyGyro")
-    bodyGyro.P = 9e4
-    bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bodyGyro.cframe = humanoidRootPart.CFrame
-    bodyGyro.Parent = humanoidRootPart
+MainSection:NewButton("ESP", "", function()
+  local FillColor = Color3.fromRGB(175,25,255)
+local DepthMode = "AlwaysOnTop"
+local FillTransparency = 0.5
+local OutlineColor = Color3.fromRGB(255,255,255)
+local OutlineTransparency = 0
 
-    bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.velocity = Vector3.new(0, 0, 0)
-    bodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
-    bodyVelocity.Parent = humanoidRootPart
+local CoreGui = game:FindService("CoreGui")
+local Players = game:FindService("Players")
+local lp = Players.LocalPlayer
+local connections = {}
 
-    flying = true
+local Storage = Instance.new("Folder")
+Storage.Parent = CoreGui
+Storage.Name = "Highlight_Storage"
 
-    game:GetService("RunService").RenderStepped:Connect(function()
-        if flying then
-            bodyVelocity.velocity = workspace.CurrentCamera.CFrame.lookVector * speed
-            bodyGyro.cframe = workspace.CurrentCamera.CFrame
-        end
+local function Highlight(plr)
+    local Highlight = Instance.new("Highlight")
+    Highlight.Name = plr.Name
+    Highlight.FillColor = FillColor
+    Highlight.DepthMode = DepthMode
+    Highlight.FillTransparency = FillTransparency
+    Highlight.OutlineColor = OutlineColor
+    Highlight.OutlineTransparency = 0
+    Highlight.Parent = Storage
+    
+    local plrchar = plr.Character
+    if plrchar then
+        Highlight.Adornee = plrchar
+    end
+
+    connections[plr] = plr.CharacterAdded:Connect(function(char)
+        Highlight.Adornee = char
     end)
 end
 
--- Função de parar fly
-function stopFly()
-    flying = false
-    if bodyGyro then bodyGyro:Destroy() end
-    if bodyVelocity then bodyVelocity:Destroy() end
+Players.PlayerAdded:Connect(Highlight)
+for i,v in next, Players:GetPlayers() do
+    Highlight(v)
 end
 
--- Criar interface Cafex
-local CafexGUI = Instance.new("ScreenGui", game.CoreGui)
-CafexGUI.Name = "Cafex"
-
-local Button = Instance.new("TextButton", CafexGUI)
-Button.Size = UDim2.new(0, 140, 0, 50)
-Button.Position = UDim2.new(0.5, -70, 0.9, 0)
-Button.Text = "Cafex: Ativar Fly"
-Button.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
-Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-Button.TextScaled = true
-Button.Visible = true
-Button.BorderSizePixel = 2
-
--- Alternar fly ao clicar
-Button.MouseButton1Click:Connect(function()
-    if flying then
-        stopFly()
-        Button.Text = "Cafex: Ativar Fly"
-    else
-        startFly()
-        Button.Text = "Cafex: Desativar Fly"
+Players.PlayerRemoving:Connect(function(plr)
+    local plrname = plr.Name
+    if Storage[plrname] then
+        Storage[plrname]:Destroy()
+    end
+    if connections[plr] then
+        connections[plr]:Disconnect()
     end
 end)
-
-print("Cafex - Fly Script Mobile carregado.")
+end)
