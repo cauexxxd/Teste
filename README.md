@@ -1,83 +1,65 @@
--- Cafex Hub Mobile - Capítulo 1 com CHAVE
--- Senha: cauedev
+-- Fly Script Mobile - Cafex (Mad City / Delta Executor)
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = char:WaitForChild("HumanoidRootPart")
 
-local senhaCorreta = "cauedev"
-local acessoLiberado = false
+local flying = false
+local speed = 5
+local bodyGyro, bodyVelocity
 
--- GUI de Login
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "CafexLogin"
+-- Função de ativar fly
+function startFly()
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.P = 9e4
+    bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.cframe = humanoidRootPart.CFrame
+    bodyGyro.Parent = humanoidRootPart
 
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 150)
-frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
+    bodyVelocity.Parent = humanoidRootPart
 
-local box = Instance.new("TextBox", frame)
-box.Size = UDim2.new(0.8, 0, 0, 40)
-box.Position = UDim2.new(0.1, 0, 0.2, 0)
-box.PlaceholderText = "Digite a chave..."
-box.Text = ""
-box.TextScaled = true
-box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-box.TextColor3 = Color3.new(1,1,1)
+    flying = true
 
-local btn = Instance.new("TextButton", frame)
-btn.Size = UDim2.new(0.8, 0, 0, 40)
-btn.Position = UDim2.new(0.1, 0, 0.6, 0)
-btn.Text = "Entrar"
-btn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-btn.TextColor3 = Color3.new(1,1,1)
-btn.TextScaled = true
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if flying then
+            bodyVelocity.velocity = workspace.CurrentCamera.CFrame.lookVector * speed
+            bodyGyro.cframe = workspace.CurrentCamera.CFrame
+        end
+    end)
+end
 
-local erro = Instance.new("TextLabel", frame)
-erro.Size = UDim2.new(1, 0, 0, 20)
-erro.Position = UDim2.new(0, 0, 0.9, 0)
-erro.Text = ""
-erro.TextColor3 = Color3.new(1, 0, 0)
-erro.BackgroundTransparency = 1
-erro.TextScaled = true
+-- Função de parar fly
+function stopFly()
+    flying = false
+    if bodyGyro then bodyGyro:Destroy() end
+    if bodyVelocity then bodyVelocity:Destroy() end
+end
 
-btn.MouseButton1Click:Connect(function()
-	if box.Text == senhaCorreta then
-		gui:Destroy()
-		acessoLiberado = true
-	else
-		erro.Text = "Senha incorreta!"
-	end
+-- Criar interface Cafex
+local CafexGUI = Instance.new("ScreenGui", game.CoreGui)
+CafexGUI.Name = "Cafex"
+
+local Button = Instance.new("TextButton", CafexGUI)
+Button.Size = UDim2.new(0, 140, 0, 50)
+Button.Position = UDim2.new(0.5, -70, 0.9, 0)
+Button.Text = "Cafex: Ativar Fly"
+Button.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+Button.TextScaled = true
+Button.Visible = true
+Button.BorderSizePixel = 2
+
+-- Alternar fly ao clicar
+Button.MouseButton1Click:Connect(function()
+    if flying then
+        stopFly()
+        Button.Text = "Cafex: Ativar Fly"
+    else
+        startFly()
+        Button.Text = "Cafex: Desativar Fly"
+    end
 end)
 
--- AGUARDAR ACESSO
-repeat wait() until acessoLiberado
-
--- CAFEX HUB MOBILE - EXEMPLO FUNCIONAL
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local gui2 = Instance.new("ScreenGui", game.CoreGui)
-gui2.Name = "CafexHubMobile"
-
-local main = Instance.new("Frame", gui2)
-main.Size = UDim2.new(0, 250, 0, 150)
-main.Position = UDim2.new(0.5, -125, 0.5, -75)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-
-local titulo = Instance.new("TextLabel", main)
-titulo.Size = UDim2.new(1, 0, 0.3, 0)
-titulo.Position = UDim2.new(0, 0, 0, 0)
-titulo.Text = "Cafex Hub - Capítulo 1"
-titulo.TextColor3 = Color3.new(1, 1, 1)
-titulo.BackgroundTransparency = 1
-titulo.TextScaled = true
-
-local botao = Instance.new("TextButton", main)
-botao.Size = UDim2.new(0.8, 0, 0.3, 0)
-botao.Position = UDim2.new(0.1, 0, 0.5, 0)
-botao.Text = "Clique aqui!"
-botao.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-botao.TextColor3 = Color3.new(1, 1, 1)
-botao.TextScaled = true
-
-botao.MouseButton1Click:Connect(function()
-	LocalPlayer.Character:MoveTo(Vector3.new(217.32, 17.75, -1763.45)) -- Coordenadas da base dos criminosos (exemplo)
-end)
+print("Cafex - Fly Script Mobile carregado.")
