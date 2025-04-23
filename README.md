@@ -79,5 +79,5 @@ botao.TextColor3 = Color3.new(1, 1, 1)
 botao.TextScaled = true
 
 botao.MouseButton1Click:Connect(function()
-	LocalPlayer:Kick("Você clicou no botão do Capítulo 1!")
+	LocalPlayer.Character:MoveTo(Vector3.new(217.32, 17.75, -1763.45)) -- Coordenadas da base dos criminosos (exemplo)
 end)
